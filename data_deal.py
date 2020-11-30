@@ -1,10 +1,10 @@
-
 import glob
 import numpy as np
-from sklearn.model_selection import train_test_split,KFold
+from sklearn.model_selection import train_test_split, KFold
 import os
 import pandas as pd
 import codecs
+
 
 def _cut(sentence):
     """
@@ -63,16 +63,16 @@ def cut_test_set(text_list, len_treshold):
 
 
 def process_one(text_file, lable_file, w_path_, text_length):
-    with open(text_file,"r") as f:
+    with open(text_file, "r") as f:
         text = f.read()
-    lines, line_len = cut_test_set([text],text_length)
-    df = pd.read_csv(lable_file, sep=",",encoding="utf-8")
+    lines, line_len = cut_test_set([text], text_length)
+    df = pd.read_csv(lable_file, sep=",", encoding="utf-8")
     q_dic = dict()
     for index, row in df.iterrows():
         cls = row[1]
         start_index = row[2]
         end_index = row[3]
-        length = end_index - start_index+1
+        length = end_index - start_index + 1
         for r in range(length):
             if r == 0:
                 q_dic[start_index] = ("B-%s" % cls)
@@ -90,6 +90,33 @@ def process_one(text_file, lable_file, w_path_, text_length):
                     else:
                         tag = "O"  # 大写字母O
                     w.write('%s %s\n' % (str_, tag))
-                i+=1
+                i += 1
             w.write('\n')
 
+
+if __name__ == "__main__":
+    file_list = glob.glob('./train (1)/data/*.txt')
+    kf = KFold(n_splits=5, shuffle=True, random_state=999).split(file_list)
+    file_list = np.array(file_list)
+    # 设置样本长度
+    text_length = 250
+    for i, (train_fold, test_fold) in enumerate(kf):
+        print(len(file_list[train_fold]), len(file_list[test_fold]))
+        train_filelist = list(file_list[train_fold])
+        val_filelist = list(file_list[test_fold])
+        # train_file
+        train_w_path = f'./data/train_{i}.txt'
+        for file in train_filelist:
+            if not file.endswith('.txt'):
+                continue
+            file_name = file.split(os.sep)[-1].split('.')[0]
+            label_file = os.path.join("./train (1)/label", "%s.csv" % file_name)
+            process_one(file, label_file, train_w_path, text_length)
+        # val_file
+        val_w_path = f'./train (1)/deal_data/val_{i}.txt'
+        for file in val_filelist:
+            if not file.endswith('.txt'):
+                continue
+            file_name = file.split(os.sep)[-1].split('.')[0]
+            label_file = os.path.join("./train (1)/label", "%s.csv" % file_name)
+            process_one(file, label_file, val_w_path, text_length)
