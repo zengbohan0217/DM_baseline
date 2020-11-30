@@ -63,7 +63,7 @@ def cut_test_set(text_list, len_treshold):
 
 
 def process_one(text_file, lable_file, w_path_, text_length):
-    with open(text_file, "r") as f:
+    with open(text_file, "r", encoding="UTF-8") as f:
         text = f.read()
     lines, line_len = cut_test_set([text], text_length)
     df = pd.read_csv(lable_file, sep=",", encoding="utf-8")
@@ -82,7 +82,7 @@ def process_one(text_file, lable_file, w_path_, text_length):
     for idx, line in enumerate(lines):
         with codecs.open(w_path_, "a+", encoding="utf-8") as w:
             for str_ in line:
-                if str_ is " " or str_ == "" or str_ == "\n" or str_ == "\r":
+                if str_ == " " or str_ == "" or str_ == "\n" or str_ == "\r":
                     pass
                 else:
                     if i in q_dic:
@@ -105,7 +105,7 @@ if __name__ == "__main__":
         train_filelist = list(file_list[train_fold])
         val_filelist = list(file_list[test_fold])
         # train_file
-        train_w_path = f'./data/train_{i}.txt'
+        train_w_path = f'./train (1)/deal_data/train_{i}.txt'
         for file in train_filelist:
             if not file.endswith('.txt'):
                 continue
@@ -113,7 +113,7 @@ if __name__ == "__main__":
             label_file = os.path.join("./train (1)/label", "%s.csv" % file_name)
             process_one(file, label_file, train_w_path, text_length)
         # val_file
-        val_w_path = f'./train (1)/deal_data/val_{i}.txt'
+        val_w_path = f'./train (1)/deal_val/val_{i}.txt'
         for file in val_filelist:
             if not file.endswith('.txt'):
                 continue
