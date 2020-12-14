@@ -84,8 +84,6 @@ num_labels = len(labels) * 2 + 1
 
 
 class data_generator(DataGenerator):
-    """数据生成器
-    """
 
     def __iter__(self, random=False):
         batch_token_ids, batch_segment_ids, batch_labels = [], [], []
@@ -227,12 +225,12 @@ model.fit_generator(
 def test_predict(data, NER_):
     test_ner = []
     for text in tqdm(data):
-        cut_text_list, cut_index_list = ddl.cut_test_set([text], maxlen)
+        cut_text_list, cut_index_list = ddl.cut_test_set([text], maxlen)    # cut_text_list中只有一句话
         posit = 0
         item_ner = []
         index = 1
         for str_ in cut_text_list:
-            ner_res = NER_.recognize(str_)
+            ner_res = NER_.recognize(str_)    # 输入一句话
             for tn in ner_res:
                 ans = {}
                 ans["label_type"] = tn[1]
