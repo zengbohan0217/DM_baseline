@@ -143,10 +143,17 @@ class NamedEntityRecognizer(ViterbiDecoder):
     """
 
     def recognize(self, text):
+
+        ###########   为了获取输入向量
         tokens = tokenizer.tokenize(text)
         mapping = tokenizer.rematch(text, tokens)
         token_ids = tokenizer.tokens_to_ids(tokens)
+        ############
+
+        ############   segment_ids往往是用来判断输入几句话的 同一输入的是一句话 因此全部是0
         segment_ids = [0] * len(token_ids)
+        ############
+
         token_ids, segment_ids = to_array([token_ids], [segment_ids])
         nodes = model.predict([token_ids, segment_ids])[0]
         labels = self.decode(nodes)
